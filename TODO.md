@@ -27,10 +27,34 @@
 	- [ ] Extrapolation
 
 ## Jacob
+Raylib?
+
 
 ## Vikram
 - [ ] create cell storage system
-	- litterally just a 2d array of strings
-	
+	1. litterally just a 2d array of strings (NOT NULL TERMINATED)
+	2. Translate cell names like ZB15 into indexes (i.e. (28, 15))
+	3.
+	4. Ability to expand the size of the 2d array
+
+```c
+int main(void) {
+    // 5x4 array
+    int *arr = malloc(sizeof(int)*5*4);
+
+struct array {int *data; int width; int height;};
+
+int at(struct array arr,int x,int y,) {
+    return arr.data[(y*arr.width) + x];
+}
+/*
+arr = [0 * wid * hgt]
+x = 20
+y = 10
+arr[(y * wid) + x]
+*/
+
+}
+```
 ## Language
-Write in *C*, Port to **Rust** when done
+Write in **C**, Port to **Rust** when done
