@@ -30,6 +30,7 @@
 
 ## Vikram
 - [ ] create cell storage system
-
+	- litterally just a 2d array of strings
+	
 ## Language
 Write in *C*, Port to **Rust** when done
