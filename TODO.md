@@ -28,7 +28,9 @@
 
 ## Jacob
 Raylib?
-
+  - Draw a grid
+  - Render text inside grid cells
+  - Figure out what a GPU or a shader is or something
 
 ## Vikram
 - [ ] create cell storage system
