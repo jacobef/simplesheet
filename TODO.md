@@ -1,9 +1,9 @@
 # TODO
 
 ## TODO:
-- [] Arbitrary precision decimal arithmetic
-- [] The ENTIRE spreadsheet backend
-	- [] Create a way of keeping track of which sheet cells have which values
+[] Arbitrary precision decimal arithmetic
+[] The ENTIRE spreadsheet backend
+	[] Create a way of keeping track of which sheet cells have which values
 	- [] Create types
 		- [] start with strings only
 		- [] Auto-detect types
