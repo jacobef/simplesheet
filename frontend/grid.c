@@ -7,7 +7,6 @@ const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 450;
 
 void SdrawGrid(int n_rows, int n_cols, int left, int top, int width, int height) {
-    DrawGrid(3, 5);
     for (int i = 0; i <= n_rows; i++) {
         int x = left + i*width/n_rows;
         DrawLine(x, top, x, top+height, BLACK);
