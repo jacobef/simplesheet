@@ -14,9 +14,22 @@ void InitWindowWithZoom(int width, int height, const char *title)
 
 static const int WINDOW_WIDTH = 800;
 static const int WINDOW_HEIGHT = 450;
-
 static const float DEFAULT_CELL_HEIGHT = 40.0;
 static const float DEFAULT_CELL_WIDTH = 120.0;
+
+
+Vector2 Vec2(float x, float y) {
+    return (Vector2) { x, y };
+}
+
+float nonNegF(float f) {
+    return fmaxf(f, 0.0f);
+}
+
+Vector2 nonNegV2(Vector2 v) {
+    return Vec2(nonNegF(v.x), nonNegF(v.y));
+}
+
 
 void drawSheetGrid(
     Vector2 grid_top_left,
@@ -32,12 +45,12 @@ void drawSheetGrid(
 
     for (int row = 0; row <= grid_height / (int)cell_height + 1; row++) {
         float y = grid_top_left.y - fmodf(y_shift_pix, cell_height) + row * cell_height;
-        DrawLineV((Vector2){grid_top_left.x, y}, (Vector2){grid_top_left.x + grid_width, y}, BLACK);
+        DrawLineV(Vec2(grid_top_left.x, y), Vec2(grid_top_left.x + grid_width, y), BLACK);
 
         for (int col = 0; col <= grid_width / (int)cell_width + 1; col++) {
             float x = grid_top_left.x - fmodf(x_shift_pix, cell_width) + col * cell_width;
             if (row == 0) {
-                DrawLineV((Vector2){x, grid_top_left.y}, (Vector2){x, grid_top_left.y + grid_height}, BLACK);
+                DrawLineV(Vec2(x, grid_top_left.y), Vec2(x, grid_top_left.y + grid_height), BLACK);
             }
 
             int actual_col = (int)(x_shift_pix / cell_width) + col;
@@ -56,14 +69,6 @@ void drawSheetGrid(
     }
 
     EndScissorMode();
-}
-
-float nonNegF(float f) {
-    return fmaxf(f, 0.0f);
-}
-
-Vector2 nonNegV2(Vector2 v) {
-    return (Vector2){ nonNegF(v.x), nonNegF(v.y) };
 }
 
 int main(void) {
@@ -118,29 +123,29 @@ int main(void) {
                     scale *= (1.0f + (float)zoom_info.zoom_delta);
                 }
                 if (!zoom_info.zooming) {
-                    zoom_center_in_world = (Vector2){
+                    zoom_center_in_world = Vec2(
                         shift.x + mouse_pos_in_grid.x / scale,
                         shift.y + mouse_pos_in_grid.y / scale
-                    };
+                    );
                 }
                 float shift_factor = (1.0f / old_scale) - (1.0f / scale);
-                shift = nonNegV2((Vector2){
+                shift = nonNegV2(Vec2(
                     zoom_center_in_world.x - (mouse_pos_in_grid.x / scale),
                     zoom_center_in_world.y - (mouse_pos_in_grid.y / scale)
-                });
+                ));
                 Vector2 scroll = GetMouseWheelMoveV();
-                shift = nonNegV2((Vector2){
+                shift = nonNegV2(Vec2(
                     shift.x - shift_speed * scroll.x,
                     shift.y - shift_speed * scroll.y
-                });
+                ));
             }
         } else {
             PollZoom(); // drain zoom delta when mouse is outside grid
         }
 
         if (IsKeyDown(KEY_SPACE)) {
-            shift = (Vector2){ 0.0f, 0.0f };
-            grid_top_left = (Vector2){ WINDOW_WIDTH / 5.0f, WINDOW_HEIGHT / 5.0f };
+            shift = Vec2(0.0f, 0.0f);
+            grid_top_left = Vec2(WINDOW_WIDTH / 5.0f, WINDOW_HEIGHT / 5.0f);
             grid_width = WINDOW_WIDTH * 4.0f / 5.0f;
             grid_height = WINDOW_HEIGHT * 4.0f / 5.0f;
             scale = 1.0f;
