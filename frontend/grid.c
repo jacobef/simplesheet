@@ -6,14 +6,14 @@
 #include <math.h>
 #include "zoom.h"
 
-void InitWindowWithZoom(int width, int height, const char *title)
-{
+void InitWindowWithZoom(int width, int height, const char *title) {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE|FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(width, height, title);
     SetupTrackpadZoom();
 }
 
-static const int WINDOW_WIDTH = 800;
-static const int WINDOW_HEIGHT = 450;
+static const int DEFAULT_WINDOW_WIDTH = 800;
+static const int DEFAULT_WINDOW_HEIGHT = 450;
 static const float DEFAULT_CELL_HEIGHT = 40.0;
 static const float DEFAULT_CELL_WIDTH = 120.0;
 
@@ -72,26 +72,30 @@ void drawSheetGrid(
 }
 
 int main(void) {
+    InitWindowWithZoom(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, "simplesheet");
+    SetTargetFPS(60);
+
     Vector2 shift = {0.0f, 0.0f};
-    Vector2 grid_top_left = {WINDOW_WIDTH / 5.0f, WINDOW_HEIGHT / 5.0f};
-    float grid_width = WINDOW_WIDTH * 4.0f / 5.0f, grid_height = WINDOW_HEIGHT * 4.0f / 5.0f;
+    Vector2 grid_top_left = {DEFAULT_WINDOW_WIDTH / 5.0f, DEFAULT_WINDOW_HEIGHT / 5.0f};
+    float grid_width = DEFAULT_WINDOW_WIDTH * 4.0f / 5.0f, grid_height = DEFAULT_WINDOW_HEIGHT * 4.0f / 5.0f;
     float scale = 1.0f;
 
     const float SCALE_FACTOR = 1.2f;
-
-    InitWindowWithZoom(WINDOW_WIDTH, WINDOW_HEIGHT, "simplesheet");
-    SetTargetFPS(60);
 
     Vector2 mouse_pos_in_grid = Vector2Subtract(GetMousePosition(), grid_top_left);
     Vector2 zoom_center_in_world = {
         shift.x + mouse_pos_in_grid.x / scale,
         shift.y + mouse_pos_in_grid.y / scale
     };
-    int screen_width = GetScreenWidth(), screen_height = GetScreenHeight();
-    int screen_max_dimension = screen_width > screen_height ? screen_width : screen_height;
+    int monitor = GetCurrentMonitor();
+    int monitor_width = GetMonitorWidth(monitor), monitor_height = GetMonitorHeight(monitor);
+    int monitor_max_dimension = monitor_width > monitor_height ? monitor_width : monitor_height;
 
     while (!WindowShouldClose()) {
-        const float shift_speed = (screen_max_dimension / 60.0f) / scale; // 1 screen width or height per second
+        int window_width = GetScreenWidth();
+        int window_height = GetScreenHeight();
+
+        const float shift_speed = (0.5f * monitor_max_dimension / 60.0f) / scale; // 2 screen widths or heights per second
 
         if (IsKeyDown(KEY_RIGHT)) {
             shift.x += shift_speed;
@@ -119,10 +123,9 @@ int main(void) {
             } else {
                 float old_scale = scale;
                 ZoomInfo zoom_info = PollZoom();
-                if (zoom_info.zoom_delta != 0.0) {
+                if (zoom_info.zooming) {
                     scale *= (1.0f + (float)zoom_info.zoom_delta);
-                }
-                if (!zoom_info.zooming) {
+                } else {
                     zoom_center_in_world = Vec2(
                         shift.x + mouse_pos_in_grid.x / scale,
                         shift.y + mouse_pos_in_grid.y / scale
@@ -145,9 +148,9 @@ int main(void) {
 
         if (IsKeyDown(KEY_SPACE)) {
             shift = Vec2(0.0f, 0.0f);
-            grid_top_left = Vec2(WINDOW_WIDTH / 5.0f, WINDOW_HEIGHT / 5.0f);
-            grid_width = WINDOW_WIDTH * 4.0f / 5.0f;
-            grid_height = WINDOW_HEIGHT * 4.0f / 5.0f;
+            grid_top_left = Vec2(window_width / 5.0f, window_height / 5.0f);
+            grid_width = window_width * 4.0f / 5.0f;
+            grid_height = window_height * 4.0f / 5.0f;
             scale = 1.0f;
         }
 
@@ -157,12 +160,12 @@ int main(void) {
         else if (IsKeyDown(KEY_S)) grid_top_left.y += shift_speed;
 
         if (IsKeyDown(KEY_E)) {
-            grid_width = fmax(grid_width - shift_speed, WINDOW_WIDTH / 10.0f);
+            grid_width = fmax(grid_width - shift_speed, monitor_width / 20.0f);
         } else if (IsKeyDown(KEY_R)) {
             grid_width += shift_speed;
         }
         if (IsKeyDown(KEY_T)) {
-            grid_height = fmax(grid_height - shift_speed, WINDOW_WIDTH / 10.0f);
+            grid_height = fmax(grid_height - shift_speed, monitor_width / 20.0f);
         } else if (IsKeyDown(KEY_G)) {
             grid_height += shift_speed;
         }
@@ -178,10 +181,10 @@ int main(void) {
             Vector2 grid_bottom_left = {grid_top_left.x, grid_top_left.y + grid_height};
             Vector2 grid_top_right = {grid_top_left.x + grid_width, grid_top_left.y};
             Vector2 grid_bottom_right = {grid_top_left.x + grid_width, grid_top_left.y + grid_height};
-            DrawLineV(grid_top_left, grid_bottom_left, shift.x == 0.0f ? BLUE : GREEN);
-            DrawLineV(grid_top_left, grid_top_right, shift.y == 0.0f ? BLUE : GREEN);
-            DrawLineV(grid_top_right, grid_bottom_right, GREEN);
-            DrawLineV(grid_bottom_left, grid_bottom_right, GREEN);
+            DrawLineEx(grid_top_left, grid_bottom_left, 2.0, shift.x == 0.0f ? BLUE : GREEN);
+            DrawLineEx(grid_top_left, grid_top_right, 2.0, shift.y == 0.0f ? BLUE : GREEN);
+            DrawLineEx(grid_top_right, grid_bottom_right, 2.0, GREEN);
+            DrawLineEx(grid_bottom_left, grid_bottom_right, 2.0, GREEN);
         EndDrawing();
     }
 

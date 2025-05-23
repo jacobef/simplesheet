@@ -18,12 +18,14 @@ static NSWindow *FindRaylibWindow(void) {
 
 @implementation ZoomPollingView
 - (void)magnifyWithEvent:(NSEvent *)event {
-    if (!zooming || (event.phase == NSEventPhaseBegan)) {
+    if (event.phase == NSEventPhaseBegan) {
         zooming = true;
-    }
-    zoomDelta += [event magnification];
-    if (event.phase == NSEventPhaseEnded || event.phase == NSEventPhaseCancelled) {
+        zoomDelta = 0.0;
+    } else if (event.phase == NSEventPhaseEnded || event.phase == NSEventPhaseCancelled) {
         zooming = false;
+        zoomDelta = 0.0;
+    } else {
+        zoomDelta += [event magnification];
     }
 }
 @end

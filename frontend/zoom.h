@@ -1,3 +1,7 @@
+#ifndef ZOOM_H
+#define ZOOM_H
+#include <stdbool.h>
+
 typedef struct ZoomInfo {
     double zoom_delta;
     bool zooming;
@@ -5,3 +9,5 @@ typedef struct ZoomInfo {
 
 void SetupTrackpadZoom(void);
 ZoomInfo PollZoom(void);
+
+#endif

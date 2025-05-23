@@ -3,6 +3,6 @@ if ! pkg-config --exists raylib; then
     exit 1
 fi
 
-clang grid.c zoom.m -o simplesheet \
+clang -g grid.c zoom.m -o simplesheet \
     $(pkg-config --cflags --libs raylib) \
     -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL
