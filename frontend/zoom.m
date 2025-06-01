@@ -56,7 +56,7 @@ void SetupTrackpadZoom(void) {
     [oldContent setFrame:[zoomView bounds]];
 }
 
-ZoomInfo PollZoom(void) {
+ZoomInfo PollZoomSinceLastCall(void) {
     struct ZoomInfo out = { zoomDelta, zooming };
     zoomDelta = 0.0;
     return out;

@@ -8,6 +8,6 @@ typedef struct ZoomInfo {
 } ZoomInfo;
 
 void SetupTrackpadZoom(void);
-ZoomInfo PollZoom(void);
+ZoomInfo PollZoomSinceLastCall(void);
 
 #endif

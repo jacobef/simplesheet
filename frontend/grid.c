@@ -122,7 +122,7 @@ int main(void) {
                 scale /= SCALE_FACTOR;
             } else {
                 float old_scale = scale;
-                ZoomInfo zoom_info = PollZoom();
+                ZoomInfo zoom_info = PollZoomSinceLastCall();
                 if (zoom_info.zooming) {
                     scale *= (1.0f + (float)zoom_info.zoom_delta);
                 } else {
@@ -143,7 +143,7 @@ int main(void) {
                 ));
             }
         } else {
-            PollZoom(); // drain zoom delta when mouse is outside grid
+            PollZoomSinceLastCall(); // drain zoom delta when mouse is outside grid
         }
 
         if (IsKeyDown(KEY_SPACE)) {
@@ -172,12 +172,7 @@ int main(void) {
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
-            drawSheetGrid(
-                grid_top_left,
-                shift,
-                scale,
-                grid_width, grid_height
-            );
+            drawSheetGrid(grid_top_left, shift, scale, grid_width, grid_height);
             Vector2 grid_bottom_left = {grid_top_left.x, grid_top_left.y + grid_height};
             Vector2 grid_top_right = {grid_top_left.x + grid_width, grid_top_left.y};
             Vector2 grid_bottom_right = {grid_top_left.x + grid_width, grid_top_left.y + grid_height};
